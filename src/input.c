@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include "menu.h"
@@ -10,13 +11,18 @@ static const MenuCommand *input_find(const char *name);
 
 static char input[1024];
 
-void input_prompt(const char *prompt) {
-    printf("%s", prompt);
+void input_prompt(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    vprintf(format, args);
 
     if (fgets(input, sizeof input, stdin) == NULL) {
         printf("\n\nbye!\n");
         exit(0);
     }
+
+    va_end(args);
 }
 
 void input_execute(void) {
@@ -31,7 +37,18 @@ void input_execute(void) {
         printf("error: invalid command %s\n", name);
         return;
     }
-    command->fn();
+
+    double args[MENU_COMMAND_MAX_ARGS];
+    for (int i = 0; i < command->args; i++) {
+        input_prompt("enter number %d: ", i + 1);
+        char *endptr;
+        args[i] = strtod(input, &endptr);
+        if (endptr == input || *endptr != '\n') {
+            printf("error: invalid number %s", input);
+            return;
+        }
+    }
+    printf("\nresult: %g\n", command->fn(args));
 }
 
 static const MenuCommand *input_find(const char *name) {
