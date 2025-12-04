@@ -1,10 +1,14 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "menu.h"
 #include "input.h"
 
 int main(void) {
     printf("- icalc -\n");
+
+    menu_init();
+    atexit(menu_deinit);
 
     while (true) {
         printf("\ncommands:\n");

@@ -5,10 +5,10 @@
 #include <stdbool.h>
 #include "menu.h"
 #include "input.h"
+#include "hashmap.h"
 
 #define WHITESPACE " \t\n"
 
-static const MenuCommand *input_find(const char *name);
 static bool input_strtod(double *d, const char *s, char expected_end);
 
 static char input[1024];
@@ -33,8 +33,19 @@ void input_execute(void) {
         return;
     }
 
-    const MenuCommand *command = input_find(name);
+    const MenuCommand *command = hm_get(menu_command_map, name);
     if (command == NULL) {
+        char *endptr;
+        long n = strtol(name, &endptr, 10);
+        if (n > 0 && *endptr == '\0') {
+            command = menu_commands;
+            while (n > 1 && command->name != NULL) {
+                command++;
+                n--;
+            }
+        }
+    }
+    if (command == NULL || command->name == NULL) {
         printf("error: invalid command %s\n", name);
         return;
     }
@@ -66,24 +77,6 @@ void input_execute(void) {
         }
     }
     printf("\nresult: %g\n", command->fn(args));
-}
-
-static const MenuCommand *input_find(const char *name) {
-    char *endptr;
-    long n = strtol(name, &endptr, 10);
-    long i = n;
-    for (const MenuCommand *command = menu_commands; command->name != NULL; command++) {
-        if (n != 0 && *endptr == '\0') {
-            if (--i == 0) {
-                return command;
-            }
-        } else {
-            if (strcmp(command->name, name) == 0) {
-                return command;
-            }
-        }
-    }
-    return NULL;
 }
 
 static bool input_strtod(double *d, const char *s, char expected_end) {

@@ -6,7 +6,7 @@ LD = $(CC)
 LDFLAGS =
 LIBS =
 
-src = src/main.c src/menu.c src/input.c
+src = src/main.c src/menu.c src/input.c src/hashmap.c
 obj = $(src:.c=.o)
 dep = $(src:.c=.d)
 
