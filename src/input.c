@@ -2,12 +2,14 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "menu.h"
 #include "input.h"
 
 #define WHITESPACE " \t\n"
 
 static const MenuCommand *input_find(const char *name);
+static bool input_strtod(double *d, const char *s, char expected_end);
 
 static char input[1024];
 
@@ -30,7 +32,6 @@ void input_execute(void) {
     if (name == NULL) {
         return;
     }
-    printf("\n");
 
     const MenuCommand *command = input_find(name);
     if (command == NULL) {
@@ -39,13 +40,29 @@ void input_execute(void) {
     }
 
     double args[MENU_COMMAND_MAX_ARGS];
-    for (int i = 0; i < command->args; i++) {
-        input_prompt("enter number %d: ", i + 1);
-        char *endptr;
-        args[i] = strtod(input, &endptr);
-        if (endptr == input || *endptr != '\n') {
-            printf("error: invalid number %s", input);
+    char *token = strtok(NULL, WHITESPACE);
+    if (token != NULL) {
+        for (int i = 0; i < command->args; i++) {
+            if (token == NULL) {
+                printf("error: missing argument\n");
+                return;
+            }
+            if (!input_strtod(&args[i], token, '\0')) {
+                return;
+            }
+            token = strtok(NULL, WHITESPACE);
+        }
+        if (token != NULL) {
+            printf("error: extra argument\n");
             return;
+        }
+    } else {
+        printf("\n");
+        for (int i = 0; i < command->args; i++) {
+            input_prompt("enter number %d: ", i + 1);
+            if (!input_strtod(&args[i], input, '\n')) {
+                return;
+            }
         }
     }
     printf("\nresult: %g\n", command->fn(args));
@@ -67,4 +84,14 @@ static const MenuCommand *input_find(const char *name) {
         }
     }
     return NULL;
+}
+
+static bool input_strtod(double *d, const char *s, char expected_end) {
+    char *endptr;
+    *d = strtod(s, &endptr);
+    if (endptr == s || *endptr != expected_end) {
+        printf("error: invalid number %s", s);
+        return false;
+    }
+    return true;
 }
