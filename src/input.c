@@ -10,6 +10,7 @@
 #define WHITESPACE " \t\n"
 
 static bool input_strtod(double *d, const char *s, char expected_end);
+static bool input_nested(double *result, char *token);
 
 static char input[1024];
 
@@ -27,10 +28,12 @@ void input_prompt(const char *format, ...) {
     va_end(args);
 }
 
-void input_execute(void) {
-    char *name = strtok(input, WHITESPACE);
+bool input_execute(double *result, const char *name) {
     if (name == NULL) {
-        return;
+        name = strtok(input, WHITESPACE);
+        if (name == NULL) {
+            return false;
+        }
     }
 
     const MenuCommand *command = hm_get(menu_command_map, name);
@@ -47,7 +50,7 @@ void input_execute(void) {
     }
     if (command == NULL || command->name == NULL) {
         printf("error: invalid command %s\n", name);
-        return;
+        return false;
     }
 
     double args[MENU_COMMAND_MAX_ARGS];
@@ -56,27 +59,75 @@ void input_execute(void) {
         for (int i = 0; i < command->args; i++) {
             if (token == NULL) {
                 printf("error: missing argument\n");
-                return;
+                return false;
             }
-            if (!input_strtod(&args[i], token, '\0')) {
-                return;
+            if (token[0] == '(') {
+                if (!input_nested(&args[i], token)) {
+                    return false;
+                }
+            } else {
+                if (!input_strtod(&args[i], token, '\0')) {
+                    return false;
+                }
             }
             token = strtok(NULL, WHITESPACE);
         }
         if (token != NULL) {
             printf("error: extra argument\n");
-            return;
+            return false;
         }
     } else {
         printf("\n");
         for (int i = 0; i < command->args; i++) {
             input_prompt("enter number %d: ", i + 1);
             if (!input_strtod(&args[i], input, '\n')) {
-                return;
+                return false;
             }
         }
     }
-    printf("\nresult: %g\n", command->fn(args));
+    *result = command->fn(args);
+    return true;
+}
+
+static bool input_nested(double *result, char *token) {
+    token[strlen(token)] = ' '; // remove '\0' inserted by strtok
+
+    // find matching close bracket
+    char *bracket = token;
+    unsigned depth = 1;
+    while (depth > 0) {
+        bracket = strpbrk(bracket + 1, "()");
+        if (bracket == NULL) {
+            printf("error: missing close bracket\n");
+            return false;
+        } else if (*bracket == '(') {
+            depth++;
+        } else {
+            depth--;
+        }
+    }
+
+    token++; // move past open bracket
+    *bracket = '\0'; // stop nested strtok on close bracket
+
+    const char *name = strtok(token, WHITESPACE);
+    if (name == NULL) {
+        printf("error: missing command name\n");
+        return false;
+    }
+    if (!input_execute(result, name)) {
+        return false;
+    }
+
+    // check for extra characters after close bracket
+    *bracket = ')';
+    token = strtok(NULL, WHITESPACE);
+    if (strcmp(token, ")") != 0) {
+        printf("error: invalid command %s\n", token);
+        return false;
+    }
+
+    return true;
 }
 
 static bool input_strtod(double *d, const char *s, char expected_end) {

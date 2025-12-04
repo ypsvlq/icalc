@@ -17,7 +17,10 @@ int main(void) {
         }
 
         input_prompt("\n>>> ");
-        input_execute();
+        double result;
+        if (input_execute(&result, NULL)) {
+            printf("\nresult = %g\n", result);
+        }
         input_prompt("\n(press enter to return to menu) ");
     }
 }
