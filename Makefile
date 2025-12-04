@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -std=c99 -Wall -Wextra -Wpedantic -g -MMD -MP
 LD = $(CC)
 LDFLAGS =
-LIBS =
+LIBS = -lm
 
 src = src/main.c src/menu.c src/input.c src/hashmap.c
 obj = $(src:.c=.o)

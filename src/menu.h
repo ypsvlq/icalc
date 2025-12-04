@@ -5,8 +5,10 @@
 #include "hashmap.h"
 
 #define MENU_COMMAND_MAX_ARGS 2
+#define MENU_FOLDER_MAX_DEPTH 3
 
 typedef struct MenuCommand MenuCommand;
+typedef struct MenuFolder MenuFolder;
 
 struct MenuCommand {
     const char *name;
@@ -14,8 +16,14 @@ struct MenuCommand {
     unsigned char args;
 };
 
-// terminated with a zero element
-extern const MenuCommand menu_commands[];
+struct MenuFolder {
+    const char *name;
+    const MenuFolder *folders; // terminated with a zero element
+    const MenuCommand *commands; // terminated with a zero element
+};
+
+extern const MenuFolder *menu_folders[MENU_FOLDER_MAX_DEPTH];
+extern unsigned char menu_folder_depth;
 
 extern HashMap *menu_command_map;
 
