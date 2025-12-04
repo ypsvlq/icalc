@@ -3,6 +3,10 @@
 
 #include <stdbool.h>
 
+#define INPUT_BUFFER_LEN 1024
+
+extern char input[INPUT_BUFFER_LEN];
+
 // uses global state: input buffer
 void input_prompt(const char *format, ...);
 

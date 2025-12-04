@@ -12,7 +12,7 @@
 static bool input_strtod(double *d, const char *s, char expected_end);
 static bool input_nested(double *result, char *token);
 
-static char input[1024];
+char input[INPUT_BUFFER_LEN];
 
 void input_prompt(const char *format, ...) {
     va_list args;
@@ -41,7 +41,7 @@ bool input_execute(double *result, const char *name) {
         char *endptr;
         long n = strtol(name, &endptr, 10);
         if (n > 0 && *endptr == '\0') {
-            command = menu_commands;
+            command = menu_folders[menu_folder_depth]->commands;
             while (n > 1 && command->name != NULL) {
                 command++;
                 n--;
