@@ -24,10 +24,10 @@ int main(void) {
 
         printf("\nfolders:\n");
         for (int i = 0; folder->folders[i].name != NULL; i++) {
-            printf("  %c. %s\n", i + 'a', folder->folders[i].name);
+            printf("  %c. %s\n", i + 'A', folder->folders[i].name);
         }
         if (menu_folder_depth > 0) {
-            printf("  z. (back)\n");
+            printf("  Z. (back)\n");
         }
 
         printf("\ncommands:\n");
@@ -38,8 +38,8 @@ int main(void) {
         input_prompt("\n>>> ");
 
         if (input[1] == '\n') {
-            if ('a' <= input[0] && input[0] < 'z') {
-                int i = input[0] - 'a';
+            if ('A' <= input[0] && input[0] < 'Z') {
+                int i = input[0] - 'A';
                 const MenuFolder *subfolder = folder->folders;
                 while (i > 0 && subfolder->name != NULL) {
                     i--;
@@ -49,7 +49,7 @@ int main(void) {
                     menu_folders[++menu_folder_depth] = subfolder;
                     continue;
                 }
-            } else if (input[0] == 'z' && menu_folder_depth > 0) {
+            } else if (input[0] == 'Z' && menu_folder_depth > 0) {
                 menu_folder_depth--;
                 continue;
             }
