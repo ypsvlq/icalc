@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include "hashmap.h"
 
-#define MENU_COMMAND_MAX_ARGS 2
-#define MENU_FOLDER_MAX_DEPTH 3
+#define MENU_COMMAND_MAX_ARGS 3
+#define MENU_FOLDER_MAX_DEPTH 4
 
 typedef struct MenuCommand MenuCommand;
 typedef struct MenuFolder MenuFolder;
