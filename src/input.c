@@ -76,7 +76,7 @@ bool input_execute(double *result, const char *name) {
             printf("error: extra argument\n");
             return false;
         }
-    } else {
+    } else if (command->args > 0) {
         printf("\n");
         for (int i = 0; i < command->args; i++) {
             input_prompt("enter number %d: ", i + 1);
