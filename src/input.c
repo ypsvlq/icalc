@@ -135,6 +135,9 @@ static bool input_strtod(double *d, const char *s, char expected_end) {
     *d = strtod(s, &endptr);
     if (endptr == s || *endptr != expected_end) {
         printf("error: invalid number %s", s);
+        if (expected_end != '\n') {
+            printf("\n");
+        }
         return false;
     }
     return true;
