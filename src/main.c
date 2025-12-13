@@ -3,12 +3,19 @@
 #include <stdlib.h>
 #include "menu.h"
 #include "input.h"
+#include "escape.h"
 
 int main(void) {
     printf("- icalc -\n");
 
-    menu_init();
+    if (!menu_init()) {
+        return 1;
+    }
     atexit(menu_deinit);
+    if (!escape_init()) {
+        return 1;
+    }
+    atexit(escape_deinit);
 
     while (true) {
         if (menu_folder_depth > 0) {

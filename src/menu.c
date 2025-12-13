@@ -404,7 +404,7 @@ HashMap *menu_command_map;
 static bool menu_init_folder(const MenuFolder *folder);
 
 bool menu_init(void) {
-    menu_command_map = hm_init();
+    menu_command_map = hm_init(HASHMAP_FLAGS_NONE);
     if (menu_command_map == NULL) {
         return false;
     }

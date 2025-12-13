@@ -5,8 +5,12 @@
 
 typedef struct HashMap HashMap; // opaque
 
+#define HASHMAP_FLAGS_NONE 0
+#define HASHMAP_FLAG_FREE_KEYS (1 << 0)
+#define HASHMAP_FLAG_FREE_VALUES (1 << 1)
+
 // returns NULL on failure
-HashMap *hm_init(void);
+HashMap *hm_init(unsigned char flags);
 
 void hm_deinit(HashMap *map);
 

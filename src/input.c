@@ -6,11 +6,14 @@
 #include "menu.h"
 #include "input.h"
 #include "hashmap.h"
+#include "escape.h"
 
 #define WHITESPACE " \t\n"
 
 static bool input_strtod(double *d, const char *s, char expected_end);
 static bool input_nested(double *result, char *token);
+static bool input_arg(double *result, char *token);
+static bool input_escape(double *result, const char *name, bool nested);
 
 char input[INPUT_BUFFER_LEN];
 
@@ -29,11 +32,17 @@ void input_prompt(const char *format, ...) {
 }
 
 bool input_execute(double *result, const char *name) {
+    bool nested = (name != NULL);
+
     if (name == NULL) {
         name = strtok(input, WHITESPACE);
         if (name == NULL) {
             return false;
         }
+    }
+
+    if (name[0] == '\\') {
+        return input_escape(result, name, nested);
     }
 
     const MenuCommand *command = hm_get(menu_command_map, name);
@@ -57,18 +66,8 @@ bool input_execute(double *result, const char *name) {
     char *token = strtok(NULL, WHITESPACE);
     if (token != NULL) {
         for (int i = 0; i < command->args; i++) {
-            if (token == NULL) {
-                printf("error: missing argument\n");
+            if (!input_arg(&args[i], token)) {
                 return false;
-            }
-            if (token[0] == '(') {
-                if (!input_nested(&args[i], token)) {
-                    return false;
-                }
-            } else {
-                if (!input_strtod(&args[i], token, '\0')) {
-                    return false;
-                }
             }
             token = strtok(NULL, WHITESPACE);
         }
@@ -87,6 +86,58 @@ bool input_execute(double *result, const char *name) {
     }
     *result = command->fn(args);
     return true;
+}
+
+static bool input_escape(double *result, const char *name, bool nested) {
+    const Escape *escape = hm_get(escape_map, &name[1]);
+    if (escape == NULL) {
+        printf("error: invalid command %s\n", name);
+        return false;
+    }
+
+    EscapeState state;
+
+    if ((escape->flags & ESCAPE_FLAG_RESULT) != 0) {
+        state.result = result;
+    } else {
+        if (nested) {
+            printf("error: invalid use of escape\n");
+            return false;
+        }
+    }
+
+    if ((escape->flags & ESCAPE_FLAG_ARG_TOKEN) != 0) {
+        state.arg_token = strtok(NULL, WHITESPACE);
+        if (state.arg_token == NULL) {
+            printf("error: missing argument\n");
+            return false;
+        }
+    }
+
+    if ((escape->flags & ESCAPE_FLAG_ARG_NUMBER) != 0) {
+        if (!input_arg(&state.arg_number, strtok(NULL, WHITESPACE))) {
+            return false;
+        }
+    }
+
+    if (strtok(NULL, WHITESPACE) != NULL) {
+        printf("error: extra argument\n");
+        return false;
+    }
+
+    return escape->fn(&state);
+}
+
+static bool input_arg(double *result, char *token) {
+    if (token == NULL) {
+        printf("error: missing argument\n");
+        return false;
+    }
+    if (token[0] == '(') {
+        return input_nested(result, token);
+    } else {
+        return input_strtod(result, token, '\0');
+    }
 }
 
 static bool input_nested(double *result, char *token) {

@@ -14,19 +14,21 @@ struct HashMap {
     Entry *entries;
     size_t size;
     size_t used;
+    unsigned char flags;
 };
 
 static unsigned long hm_hash(const char *key);
 static Entry *hm_entry(HashMap *map, const char *key);
 static bool hm_rehash(HashMap *map);
 
-HashMap *hm_init(void) {
+HashMap *hm_init(unsigned char flags) {
     HashMap *map = malloc(sizeof *map);
     if (map == NULL) {
         return NULL;
     }
     map->size = 16;
     map->used = 0;
+    map->flags = flags;
     map->entries = calloc(map->size, sizeof *map->entries);
     if (map->entries == NULL) {
         free(map);
@@ -36,6 +38,20 @@ HashMap *hm_init(void) {
 }
 
 void hm_deinit(HashMap *map) {
+    bool free_keys = ((map->flags & HASHMAP_FLAG_FREE_KEYS) != 0);
+    bool free_values = ((map->flags & HASHMAP_FLAG_FREE_VALUES) != 0);
+    if (free_keys || free_values) {
+        for (size_t i = 0; i < map->size; i++) {
+            if (map->entries[i].key != NULL) {
+                if (free_keys) {
+                    free((void *)map->entries[i].key);
+                }
+                if (free_values) {
+                    free(map->entries[i].value);
+                }
+            }
+        }
+    }
     free(map->entries);
     free(map);
 }
@@ -51,6 +67,13 @@ bool hm_put(HashMap *map, const char *key, void *value) {
             entry = hm_entry(map, key);
         }
         map->used++;
+    } else {
+        if ((map->flags & HASHMAP_FLAG_FREE_KEYS) != 0) {
+            free((void *)entry->key);
+        }
+        if ((map->flags & HASHMAP_FLAG_FREE_VALUES) != 0) {
+            free(entry->value);
+        }
     }
 
     entry->key = key;
