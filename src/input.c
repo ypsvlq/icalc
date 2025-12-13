@@ -64,7 +64,7 @@ bool input_execute(double *result, const char *name) {
 
     double args[MENU_COMMAND_MAX_ARGS];
     char *token = strtok(NULL, WHITESPACE);
-    if (token != NULL) {
+    if (token != NULL || nested) {
         for (int i = 0; i < command->args; i++) {
             if (!input_arg(&args[i], token)) {
                 return false;
