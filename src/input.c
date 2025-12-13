@@ -90,7 +90,13 @@ bool input_execute(double *result, const char *name) {
 }
 
 static bool input_nested(double *result, char *token) {
-    token[strlen(token)] = ' '; // remove '\0' inserted by strtok
+    // remove null terminator if it was inserted by strtok
+    char *next = strtok(NULL, WHITESPACE);
+    if (next != NULL) {
+        next[strlen(next)] = ' ';
+        input[INPUT_BUFFER_LEN - 1] = '\0';
+        token[strlen(token)] = ' ';
+    }
 
     // find matching close bracket
     char *bracket = token;
@@ -121,7 +127,7 @@ static bool input_nested(double *result, char *token) {
 
     // check for extra characters after close bracket
     *bracket = ')';
-    token = strtok(NULL, WHITESPACE);
+    token = strtok(bracket, WHITESPACE);
     if (strcmp(token, ")") != 0) {
         printf("error: invalid command %s\n", token);
         return false;
