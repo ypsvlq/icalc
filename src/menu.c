@@ -49,18 +49,12 @@ static complex double cmd_pi(const complex double *args) {
     return PI;
 }
 
-static complex double cmd_phi(const complex double *args) {
-    (void)args;
-    return 1.618033988749894;
-}
-
 static const MenuCommand cmds_constants[] = {
     {"pi", cmd_pi, 0},
-    {"phi", cmd_phi, 0},
     {0},
 };
 
-// commands: /constants/physics
+// commands: /constants/physical
 
 static complex double cmd_c(const complex double *args) {
     (void)args;
@@ -107,7 +101,7 @@ static complex double cmd_epsilon_0(const complex double *args) {
     return 8.854187818814e-12;
 }
 
-static const MenuCommand cmds_constants_physics[] = {
+static const MenuCommand cmds_constants_physical[] = {
     {"c", cmd_c, 0},
     {"h", cmd_h, 0},
     {"hbar", cmd_hbar, 0},
@@ -122,7 +116,7 @@ static const MenuCommand cmds_constants_physics[] = {
 
 // commands: /scientific
 
-static complex double cmd_power(const complex double *args) {
+static complex double cmd_pow(const complex double *args) {
     return cpow(args[0], args[1]);
 }
 
@@ -162,7 +156,7 @@ static complex double cmd_factorial(const complex double *args) {
 }
 
 static const MenuCommand cmds_scientific[] = {
-    {"power", cmd_power, 2},
+    {"pow", cmd_pow, 2},
     {"nthroot", cmd_nthroot, 2},
     {"sqrt", cmd_sqrt, 1},
     {"exp", cmd_exp, 1},
@@ -196,23 +190,6 @@ static const MenuCommand cmds_scientific_rounding[] = {
     {"trunc", cmd_trunc, 1},
     {"floor", cmd_floor, 1},
     {"ceil", cmd_ceil, 1},
-    {0},
-};
-
-// commands: /scientific/sets
-
-static complex double cmd_permutations(const complex double *args) {
-    complex double d = args[0] - args[1];
-    return cmd_factorial(&args[0]) / cmd_factorial(&d);
-}
-
-static complex double cmd_combinations(const complex double *args) {
-    return cmd_permutations(args) / cmd_factorial(&args[1]);
-}
-
-static const MenuCommand cmds_scientific_sets[] = {
-    {"permutations", cmd_permutations, 2},
-    {"combinations", cmd_combinations, 2},
     {0},
 };
 
@@ -375,12 +352,11 @@ static const MenuFolder folders_trigonometry[] = {
 
 static const MenuFolder folders_scientific[] = {
     {"rounding", folders_none, cmds_scientific_rounding},
-    {"sets", folders_none, cmds_scientific_sets},
     {0},
 };
 
 static const MenuFolder folders_constants[] = {
-    {"physics", folders_none, cmds_constants_physics},
+    {"physical", folders_none, cmds_constants_physical},
     {0},
 };
 
