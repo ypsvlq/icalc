@@ -11,9 +11,8 @@
 
 #define WHITESPACE " \t\n"
 
-static bool input_strtod(complex double *d, const char *s, char expected_end);
 static bool input_nested(complex double *result, char *token);
-static bool input_arg(complex double *result, char *token);
+static bool input_arg(complex double *result, char *token, char expected_end);
 static bool input_escape(complex double *result, const char *name, bool nested);
 
 char input[INPUT_BUFFER_LEN];
@@ -67,7 +66,7 @@ bool input_execute(complex double *result, const char *name) {
     char *token = strtok(NULL, WHITESPACE);
     if (token != NULL || nested) {
         for (int i = 0; i < command->args; i++) {
-            if (!input_arg(&args[i], token)) {
+            if (!input_arg(&args[i], token, '\0')) {
                 return false;
             }
             token = strtok(NULL, WHITESPACE);
@@ -80,7 +79,7 @@ bool input_execute(complex double *result, const char *name) {
         printf("\n");
         for (int i = 0; i < command->args; i++) {
             input_prompt("enter number %d: ", i + 1);
-            if (!input_strtod(&args[i], input, '\n')) {
+            if (!input_arg(&args[i], input, '\n')) {
                 return false;
             }
         }
@@ -116,7 +115,7 @@ static bool input_escape(complex double *result, const char *name, bool nested) 
     }
 
     if ((escape->flags & ESCAPE_FLAG_ARG_NUMBER) != 0) {
-        if (!input_arg(&state.arg_number, strtok(NULL, WHITESPACE))) {
+        if (!input_arg(&state.arg_number, strtok(NULL, WHITESPACE), '\0')) {
             return false;
         }
     }
@@ -129,16 +128,26 @@ static bool input_escape(complex double *result, const char *name, bool nested) 
     return escape->fn(&state);
 }
 
-static bool input_arg(complex double *result, char *token) {
+static bool input_arg(complex double *result, char *token, char expected_end) {
     if (token == NULL) {
         printf("error: missing argument\n");
         return false;
     }
+
     if (token[0] == '(') {
         return input_nested(result, token);
-    } else {
-        return input_strtod(result, token, '\0');
     }
+
+    char *endptr;
+    *result = strtod(token, &endptr);
+    if (endptr == token || *endptr != expected_end) {
+        printf("error: invalid number %s", token);
+        if (expected_end != '\n') {
+            printf("\n");
+        }
+        return false;
+    }
+    return true;
 }
 
 static bool input_nested(complex double *result, char *token) {
@@ -185,18 +194,5 @@ static bool input_nested(complex double *result, char *token) {
         return false;
     }
 
-    return true;
-}
-
-static bool input_strtod(complex double *d, const char *s, char expected_end) {
-    char *endptr;
-    *d = strtod(s, &endptr);
-    if (endptr == s || *endptr != expected_end) {
-        printf("error: invalid number %s", s);
-        if (expected_end != '\n') {
-            printf("\n");
-        }
-        return false;
-    }
     return true;
 }
