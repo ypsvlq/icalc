@@ -23,6 +23,8 @@ struct MenuFolder {
     const MenuCommand *commands; // terminated with a zero element
 };
 
+extern complex double menu_ans;
+
 extern const MenuFolder *menu_folders[MENU_FOLDER_MAX_DEPTH];
 extern unsigned char menu_folder_depth;
 

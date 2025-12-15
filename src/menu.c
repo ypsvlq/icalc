@@ -9,6 +9,8 @@
 
 #define PI 3.14159265358979323846
 
+complex double menu_ans = 0.0;
+
 // commands: /
 
 static complex double cmd_add(const complex double *args) {
@@ -27,6 +29,11 @@ static complex double cmd_div(const complex double *args) {
     return args[0] / args[1];
 }
 
+static complex double cmd_ans(const complex double *args) {
+    (void)args;
+    return menu_ans;
+}
+
 static complex double cmd_exit(const complex double *args) {
     (void)args;
     printf("\nbye!\n");
@@ -38,6 +45,7 @@ static const MenuCommand cmds_root[] = {
     {"sub", cmd_sub, 2},
     {"mul", cmd_mul, 2},
     {"div", cmd_div, 2},
+    {"ans", cmd_ans, 0},
     {"exit", cmd_exit, 0},
     {0},
 };

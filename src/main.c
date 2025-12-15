@@ -63,11 +63,12 @@ int main(void) {
             }
         }
 
-        complex double result;
-        if (input_execute(&result, NULL)) {
-            printf("\nresult = %g", creal(result));
-            if (cimag(result) != 0.0) {
-                printf("%+gi", cimag(result));
+        if (input_execute(&menu_ans, NULL)) {
+            double real = creal(menu_ans);
+            double imag = cimag(menu_ans);
+            printf("\nresult = %g", real);
+            if (imag != 0.0) {
+                printf("%+gi", imag);
             }
             printf("\n");
         }
