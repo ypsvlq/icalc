@@ -49,8 +49,14 @@ static complex double cmd_pi(const complex double *args) {
     return PI;
 }
 
+static complex double cmd_i(const complex double *args) {
+    (void)args;
+    return I;
+}
+
 static const MenuCommand cmds_constants[] = {
     {"pi", cmd_pi, 0},
+    {"i", cmd_i, 0},
     {0},
 };
 
@@ -184,6 +190,32 @@ static complex double cmd_floor(const complex double *args) {
 static complex double cmd_ceil(const complex double *args) {
     return ceil(creal(args[0]));
 }
+
+// commands: /scientific/complex
+
+static complex double cmd_real(const complex double *args) {
+    return creal(args[0]);
+}
+
+static complex double cmd_imag(const complex double *args) {
+    return cimag(args[0]);
+}
+
+static complex double cmd_arg(const complex double *args) {
+    return carg(args[0]);
+}
+
+static complex double cmd_conj(const complex double *args) {
+    return conj(args[0]);
+}
+
+static const MenuCommand cmds_scientific_complex[] = {
+    {"real", cmd_real, 1},
+    {"imag", cmd_imag, 1},
+    {"arg", cmd_arg, 1},
+    {"conj", cmd_conj, 1},
+    {0},
+};
 
 static const MenuCommand cmds_scientific_rounding[] = {
     {"round", cmd_round, 1},
@@ -352,6 +384,7 @@ static const MenuFolder folders_trigonometry[] = {
 
 static const MenuFolder folders_scientific[] = {
     {"rounding", folders_none, cmds_scientific_rounding},
+    {"complex", folders_none, cmds_scientific_complex},
     {0},
 };
 
