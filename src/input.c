@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <complex.h>
 #include "menu.h"
 #include "input.h"
 #include "hashmap.h"
@@ -10,10 +11,10 @@
 
 #define WHITESPACE " \t\n"
 
-static bool input_strtod(double *d, const char *s, char expected_end);
-static bool input_nested(double *result, char *token);
-static bool input_arg(double *result, char *token);
-static bool input_escape(double *result, const char *name, bool nested);
+static bool input_strtod(complex double *d, const char *s, char expected_end);
+static bool input_nested(complex double *result, char *token);
+static bool input_arg(complex double *result, char *token);
+static bool input_escape(complex double *result, const char *name, bool nested);
 
 char input[INPUT_BUFFER_LEN];
 
@@ -31,7 +32,7 @@ void input_prompt(const char *format, ...) {
     va_end(args);
 }
 
-bool input_execute(double *result, const char *name) {
+bool input_execute(complex double *result, const char *name) {
     bool nested = (name != NULL);
 
     if (name == NULL) {
@@ -62,7 +63,7 @@ bool input_execute(double *result, const char *name) {
         return false;
     }
 
-    double args[MENU_COMMAND_MAX_ARGS];
+    complex double args[MENU_COMMAND_MAX_ARGS];
     char *token = strtok(NULL, WHITESPACE);
     if (token != NULL || nested) {
         for (int i = 0; i < command->args; i++) {
@@ -88,7 +89,7 @@ bool input_execute(double *result, const char *name) {
     return true;
 }
 
-static bool input_escape(double *result, const char *name, bool nested) {
+static bool input_escape(complex double *result, const char *name, bool nested) {
     const Escape *escape = hm_get(escape_map, &name[1]);
     if (escape == NULL) {
         printf("error: invalid command %s\n", name);
@@ -128,7 +129,7 @@ static bool input_escape(double *result, const char *name, bool nested) {
     return escape->fn(&state);
 }
 
-static bool input_arg(double *result, char *token) {
+static bool input_arg(complex double *result, char *token) {
     if (token == NULL) {
         printf("error: missing argument\n");
         return false;
@@ -140,7 +141,7 @@ static bool input_arg(double *result, char *token) {
     }
 }
 
-static bool input_nested(double *result, char *token) {
+static bool input_nested(complex double *result, char *token) {
     // remove null terminator if it was inserted by strtok
     char *next = strtok(NULL, WHITESPACE);
     if (next != NULL) {
@@ -187,7 +188,7 @@ static bool input_nested(double *result, char *token) {
     return true;
 }
 
-static bool input_strtod(double *d, const char *s, char expected_end) {
+static bool input_strtod(complex double *d, const char *s, char expected_end) {
     char *endptr;
     *d = strtod(s, &endptr);
     if (endptr == s || *endptr != expected_end) {

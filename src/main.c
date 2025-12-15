@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <complex.h>
 #include "menu.h"
 #include "input.h"
 #include "escape.h"
@@ -62,9 +63,13 @@ int main(void) {
             }
         }
 
-        double result;
+        complex double result;
         if (input_execute(&result, NULL)) {
-            printf("\nresult = %g\n", result);
+            printf("\nresult = %g", creal(result));
+            if (cimag(result) != 0.0) {
+                printf("%+gi", cimag(result));
+            }
+            printf("\n");
         }
         input_prompt("\n(press enter to return to menu) ");
     }

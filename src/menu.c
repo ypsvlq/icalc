@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <complex.h>
 #include "menu.h"
 #include "hashmap.h"
 
@@ -10,23 +11,23 @@
 
 // commands: /
 
-static double cmd_add(const double *args) {
+static complex double cmd_add(const complex double *args) {
     return args[0] + args[1];
 }
 
-static double cmd_sub(const double *args) {
+static complex double cmd_sub(const complex double *args) {
     return args[0] - args[1];
 }
 
-static double cmd_mul(const double *args) {
+static complex double cmd_mul(const complex double *args) {
     return args[0] * args[1];
 }
 
-static double cmd_div(const double *args) {
+static complex double cmd_div(const complex double *args) {
     return args[0] / args[1];
 }
 
-static double cmd_exit(const double *args) {
+static complex double cmd_exit(const complex double *args) {
     (void)args;
     printf("\nbye!\n");
     exit(0);
@@ -43,12 +44,12 @@ static const MenuCommand cmds_root[] = {
 
 // commands: /constants
 
-static double cmd_pi(const double *args) {
+static complex double cmd_pi(const complex double *args) {
     (void)args;
     return PI;
 }
 
-static double cmd_phi(const double *args) {
+static complex double cmd_phi(const complex double *args) {
     (void)args;
     return 1.618033988749894;
 }
@@ -61,47 +62,47 @@ static const MenuCommand cmds_constants[] = {
 
 // commands: /constants/physics
 
-static double cmd_c(const double *args) {
+static complex double cmd_c(const complex double *args) {
     (void)args;
     return 299792458;
 }
 
-static double cmd_h(const double *args) {
+static complex double cmd_h(const complex double *args) {
     (void)args;
     return 6.62607015e-34;
 }
 
-static double cmd_hbar(const double *args) {
+static complex double cmd_hbar(const complex double *args) {
     (void)args;
     return 1.054571817e-34;
 }
 
-static double cmd_k(const double *args) {
+static complex double cmd_k(const complex double *args) {
     (void)args;
     return 1.380649e-23;
 }
 
-static double cmd_e(const double *args) {
+static complex double cmd_e(const complex double *args) {
     (void)args;
     return 1.602176634e-19;
 }
 
-static double cmd_m_e(const double *args) {
+static complex double cmd_m_e(const complex double *args) {
     (void)args;
     return 9.109383713928e-31;
 }
 
-static double cmd_mu_0(const double *args) {
+static complex double cmd_mu_0(const complex double *args) {
     (void)args;
     return 1.2566370612720e-6;
 }
 
-static double cmd_z_0(const double *args) {
+static complex double cmd_z_0(const complex double *args) {
     (void)args;
     return 376.73031341259;
 }
 
-static double cmd_epsilon_0(const double *args) {
+static complex double cmd_epsilon_0(const complex double *args) {
     (void)args;
     return 8.854187818814e-12;
 }
@@ -121,37 +122,37 @@ static const MenuCommand cmds_constants_physics[] = {
 
 // commands: /scientific
 
-static double cmd_power(const double *args) {
-    return pow(args[0], args[1]);
+static complex double cmd_power(const complex double *args) {
+    return cpow(args[0], args[1]);
 }
 
-static double cmd_nthroot(const double *args) {
-    return pow(args[0], 1.0 / args[1]);
+static complex double cmd_nthroot(const complex double *args) {
+    return cpow(args[0], 1.0 / args[1]);
 }
 
-static double cmd_sqrt(const double *args) {
-    return sqrt(args[0]);
+static complex double cmd_sqrt(const complex double *args) {
+    return csqrt(args[0]);
 }
 
-static double cmd_exp(const double *args) {
-    return pow(2.7182818284590452354, args[0]);
+static complex double cmd_exp(const complex double *args) {
+    return cexp(args[0]);
 }
 
-static double cmd_log(const double *args) {
-    return log(args[0]);
+static complex double cmd_log(const complex double *args) {
+    return clog(args[0]);
 }
 
-static double cmd_logb(const double *args) {
-    return log(args[1]) / log(args[0]);
+static complex double cmd_logb(const complex double *args) {
+    return clog(args[1]) / clog(args[0]);
 }
 
-static double cmd_abs(const double *args) {
-    return fabs(args[0]);
+static complex double cmd_abs(const complex double *args) {
+    return cabs(args[0]);
 }
 
-static double cmd_factorial(const double *args) {
+static complex double cmd_factorial(const complex double *args) {
     double result = 1.0;
-    for (int i = 2; i <= args[0]; i++) {
+    for (double i = 2; i <= creal(args[0]); i++) {
         result *= i;
         if (isinf(result)) {
             break;
@@ -174,20 +175,20 @@ static const MenuCommand cmds_scientific[] = {
 
 // commands: /scientific/rounding
 
-static double cmd_round(const double *args) {
-    return round(args[0]);
+static complex double cmd_round(const complex double *args) {
+    return round(creal(args[0]));
 }
 
-static double cmd_trunc(const double *args) {
-    return trunc(args[0]);
+static complex double cmd_trunc(const complex double *args) {
+    return trunc(creal(args[0]));
 }
 
-static double cmd_floor(const double *args) {
-    return floor(args[0]);
+static complex double cmd_floor(const complex double *args) {
+    return floor(creal(args[0]));
 }
 
-static double cmd_ceil(const double *args) {
-    return ceil(args[0]);
+static complex double cmd_ceil(const complex double *args) {
+    return ceil(creal(args[0]));
 }
 
 static const MenuCommand cmds_scientific_rounding[] = {
@@ -200,12 +201,12 @@ static const MenuCommand cmds_scientific_rounding[] = {
 
 // commands: /scientific/sets
 
-static double cmd_permutations(const double *args) {
-    double d = args[0] - args[1];
+static complex double cmd_permutations(const complex double *args) {
+    complex double d = args[0] - args[1];
     return cmd_factorial(&args[0]) / cmd_factorial(&d);
 }
 
-static double cmd_combinations(const double *args) {
+static complex double cmd_combinations(const complex double *args) {
     return cmd_permutations(args) / cmd_factorial(&args[1]);
 }
 
@@ -217,24 +218,24 @@ static const MenuCommand cmds_scientific_sets[] = {
 
 // commands: /trigonometry
 
-static double cmd_deg_rad(const double *args) {
+static complex double cmd_deg_rad(const complex double *args) {
     return args[0] * PI / 180.0;
 }
 
-static double cmd_rad_deg(const double *args) {
+static complex double cmd_rad_deg(const complex double *args) {
     return args[0] * 180.0 / PI;
 }
 
-static double cmd_sin(const double *args) {
-    return sin(args[0]);
+static complex double cmd_sin(const complex double *args) {
+    return csin(args[0]);
 }
 
-static double cmd_cos(const double *args) {
-    return cos(args[0]);
+static complex double cmd_cos(const complex double *args) {
+    return ccos(args[0]);
 }
 
-static double cmd_tan(const double *args) {
-    return tan(args[0]);
+static complex double cmd_tan(const complex double *args) {
+    return ctan(args[0]);
 }
 
 static const MenuCommand cmds_trigonometry[] = {
@@ -248,16 +249,16 @@ static const MenuCommand cmds_trigonometry[] = {
 
 // commands: /trigonometry/inverse
 
-static double cmd_arcsin(const double *args) {
-    return asin(args[0]);
+static complex double cmd_arcsin(const complex double *args) {
+    return casin(args[0]);
 }
 
-static double cmd_arccos(const double *args) {
-    return acos(args[0]);
+static complex double cmd_arccos(const complex double *args) {
+    return cacos(args[0]);
 }
 
-static double cmd_arctan(const double *args) {
-    return atan(args[0]);
+static complex double cmd_arctan(const complex double *args) {
+    return catan(args[0]);
 }
 
 static const MenuCommand cmds_trigonometry_inverse[] = {
@@ -269,16 +270,16 @@ static const MenuCommand cmds_trigonometry_inverse[] = {
 
 // commands: /trigonometry/hyperbolic
 
-static double cmd_sinh(const double *args) {
-    return sinh(args[0]);
+static complex double cmd_sinh(const complex double *args) {
+    return csinh(args[0]);
 }
 
-static double cmd_cosh(const double *args) {
-    return cosh(args[0]);
+static complex double cmd_cosh(const complex double *args) {
+    return ccosh(args[0]);
 }
 
-static double cmd_tanh(const double *args) {
-    return tanh(args[0]);
+static complex double cmd_tanh(const complex double *args) {
+    return ctanh(args[0]);
 }
 
 static const MenuCommand cmds_trigonometry_hyperbolic[] = {
@@ -290,16 +291,16 @@ static const MenuCommand cmds_trigonometry_hyperbolic[] = {
 
 // commands: /trigonometry/hyperbolic/inverse
 
-static double cmd_arsinh(const double *args) {
-    return asinh(args[0]);
+static complex double cmd_arsinh(const complex double *args) {
+    return casinh(args[0]);
 }
 
-static double cmd_arcosh(const double *args) {
-    return acosh(args[0]);
+static complex double cmd_arcosh(const complex double *args) {
+    return cacosh(args[0]);
 }
 
-static double cmd_artanh(const double *args) {
-    return atanh(args[0]);
+static complex double cmd_artanh(const complex double *args) {
+    return catanh(args[0]);
 }
 
 static const MenuCommand cmds_trigonometry_hyperbolic_inverse[] = {
@@ -311,22 +312,22 @@ static const MenuCommand cmds_trigonometry_hyperbolic_inverse[] = {
 
 // commands: /equations
 
-static double cmd_hypot(const double *args) {
-    return sqrt((args[0] * args[0]) + (args[1] * args[1]));
+static complex double cmd_hypot(const complex double *args) {
+    return csqrt((args[0] * args[0]) + (args[1] * args[1]));
 }
 
-static double cmd_quadratic_p(const double *args) {
-    double a = args[0];
-    double b = args[1];
-    double c = args[2];
-    return (-b + sqrt((b * b) - (4 * a * c))) / (2 * a);
+static complex double cmd_quadratic_p(const complex double *args) {
+    complex double a = args[0];
+    complex double b = args[1];
+    complex double c = args[2];
+    return (-b + csqrt((b * b) - (4 * a * c))) / (2 * a);
 }
 
-static double cmd_quadratic_m(const double *args) {
-    double a = args[0];
-    double b = args[1];
-    double c = args[2];
-    return (-b - sqrt((b * b) - (4 * a * c))) / (2 * a);
+static complex double cmd_quadratic_m(const complex double *args) {
+    complex double a = args[0];
+    complex double b = args[1];
+    complex double c = args[2];
+    return (-b - csqrt((b * b) - (4 * a * c))) / (2 * a);
 }
 
 static const MenuCommand cmds_equations[] = {
@@ -338,16 +339,16 @@ static const MenuCommand cmds_equations[] = {
 
 // commands: /bitwise
 
-static double cmd_and(const double *args) {
-    return (unsigned long long)args[0] & (unsigned long long)args[1];
+static complex double cmd_and(const complex double *args) {
+    return (unsigned long long)creal(args[0]) & (unsigned long long)creal(args[1]);
 }
 
-static double cmd_or(const double *args) {
-    return (unsigned long long)args[0] | (unsigned long long)args[1];
+static complex double cmd_or(const complex double *args) {
+    return (unsigned long long)creal(args[0]) | (unsigned long long)creal(args[1]);
 }
 
-static double cmd_xor(const double *args) {
-    return (unsigned long long)args[0] ^ (unsigned long long)args[1];
+static complex double cmd_xor(const complex double *args) {
+    return (unsigned long long)creal(args[0]) ^ (unsigned long long)creal(args[1]);
 }
 
 static const MenuCommand cmds_bitwise[] = {

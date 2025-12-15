@@ -2,6 +2,7 @@
 #define ICALC_ESCAPE_H
 
 #include <stdbool.h>
+#include <complex.h>
 #include "hashmap.h"
 
 typedef struct EscapeState EscapeState;
@@ -13,9 +14,9 @@ typedef struct Escape Escape;
 #define ESCAPE_FLAG_ARG_NUMBER (1 << 2)
 
 struct EscapeState {
-    double *result;
+    complex double *result;
     const char *arg_token;
-    double arg_number;
+    complex double arg_number;
 };
 
 struct Escape {

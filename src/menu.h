@@ -2,6 +2,7 @@
 #define ICALC_MENU_H
 
 #include <stdbool.h>
+#include <complex.h>
 #include "hashmap.h"
 
 #define MENU_COMMAND_MAX_ARGS 3
@@ -12,7 +13,7 @@ typedef struct MenuFolder MenuFolder;
 
 struct MenuCommand {
     const char *name;
-    double (*fn)(const double *args);
+    complex double (*fn)(const complex double *args);
     unsigned char args;
 };
 

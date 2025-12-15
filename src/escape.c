@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <complex.h>
 #include "escape.h"
 #include "hashmap.h"
 
@@ -15,7 +16,7 @@ static bool esc_set(EscapeState *state) {
     }
     memcpy(key, state->arg_token, len);
 
-    double *value = malloc(sizeof *value);
+    complex double *value = malloc(sizeof *value);
     if (!value) {
         free(key);
         return false;
@@ -33,7 +34,7 @@ static bool esc_set(EscapeState *state) {
 }
 
 static bool esc_get(EscapeState *state) {
-    double *value = hm_get(vars, state->arg_token);
+    complex double *value = hm_get(vars, state->arg_token);
     if (value == NULL) {
         printf("error: undefined var %s\n", state->arg_token);
         return false;
@@ -43,7 +44,7 @@ static bool esc_get(EscapeState *state) {
 }
 
 static bool esc_hex(EscapeState *state) {
-    printf("\nresult = 0x%llx\n", (unsigned long long)state->arg_number);
+    printf("\nresult = 0x%llx\n", (unsigned long long)creal(state->arg_number));
     return false;
 }
 
