@@ -25,6 +25,8 @@ struct Escape {
     unsigned char flags;
 };
 
+extern bool escape_quiet;
+
 extern HashMap *escape_map;
 
 bool escape_init(void);

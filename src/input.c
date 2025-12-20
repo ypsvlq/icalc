@@ -47,7 +47,7 @@ bool input_execute(complex double *result, const char *name) {
     }
 
     const MenuCommand *command = hm_get(menu_command_map, name);
-    if (command == NULL && !nested && strtok(NULL, WHITESPACE) == NULL) {
+    if (command == NULL && !nested && !escape_quiet && strtok(NULL, WHITESPACE) == NULL) {
         char *endptr;
         long n = strtol(name, &endptr, 10);
         if (n > 0 && *endptr == '\0') {

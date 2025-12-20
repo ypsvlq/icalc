@@ -19,47 +19,52 @@ int main(void) {
     atexit(escape_deinit);
 
     while (true) {
-        if (menu_folder_depth > 0) {
-            printf("\n[");
-            printf("%s", menu_folders[1]->name);
-            for (int i = 2; i <= menu_folder_depth; i++) {
-                printf("/%s", menu_folders[i]->name);
-            }
-            printf("]\n");
-        }
-
         const MenuFolder *folder = menu_folders[menu_folder_depth];
 
-        printf("\nfolders:\n");
-        for (int i = 0; folder->folders[i].name != NULL; i++) {
-            printf("  %c. %s\n", i + 'A', folder->folders[i].name);
-        }
-        if (menu_folder_depth > 0) {
-            printf("  Z. (back)\n");
-        }
+        if (!escape_quiet) {
+            if (menu_folder_depth > 0) {
+                printf("\n[");
+                printf("%s", menu_folders[1]->name);
+                for (int i = 2; i <= menu_folder_depth; i++) {
+                    printf("/%s", menu_folders[i]->name);
+                }
+                printf("]\n");
+            }
 
-        printf("\ncommands:\n");
-        for (int i = 0; folder->commands[i].name != NULL; i++) {
-            printf("  %d. %s\n", i + 1, folder->commands[i].name);
+
+            printf("\nfolders:\n");
+            for (int i = 0; folder->folders[i].name != NULL; i++) {
+                printf("  %c. %s\n", i + 'A', folder->folders[i].name);
+            }
+            if (menu_folder_depth > 0) {
+                printf("  Z. (back)\n");
+            }
+
+            printf("\ncommands:\n");
+            for (int i = 0; folder->commands[i].name != NULL; i++) {
+                printf("  %d. %s\n", i + 1, folder->commands[i].name);
+            }
         }
 
         input_prompt("\n>>> ");
 
-        if (input[1] == '\n') {
-            if ('A' <= input[0] && input[0] < 'Z') {
-                int i = input[0] - 'A';
-                const MenuFolder *subfolder = folder->folders;
-                while (i > 0 && subfolder->name != NULL) {
-                    i--;
-                    subfolder++;
-                }
-                if (i == 0 && subfolder->name != NULL) {
-                    menu_folders[++menu_folder_depth] = subfolder;
+        if (!escape_quiet) {
+            if (input[1] == '\n') {
+                if ('A' <= input[0] && input[0] < 'Z') {
+                    int i = input[0] - 'A';
+                    const MenuFolder *subfolder = folder->folders;
+                    while (i > 0 && subfolder->name != NULL) {
+                        i--;
+                        subfolder++;
+                    }
+                    if (i == 0 && subfolder->name != NULL) {
+                        menu_folders[++menu_folder_depth] = subfolder;
+                        continue;
+                    }
+                } else if (input[0] == 'Z' && menu_folder_depth > 0) {
+                    menu_folder_depth--;
                     continue;
                 }
-            } else if (input[0] == 'Z' && menu_folder_depth > 0) {
-                menu_folder_depth--;
-                continue;
             }
         }
 
@@ -72,6 +77,9 @@ int main(void) {
             }
             printf("\n");
         }
-        input_prompt("\n(press enter to return to menu) ");
+
+        if (!escape_quiet) {
+            input_prompt("\n(press enter to return to menu) ");
+        }
     }
 }

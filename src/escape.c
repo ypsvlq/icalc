@@ -6,12 +6,20 @@
 #include "escape.h"
 #include "hashmap.h"
 
+bool escape_quiet = false;
+
 static HashMap *vars;
 
 static bool esc_exit(EscapeState *state) {
     (void)state;
     printf("\nbye!\n");
     exit(0);
+}
+
+static bool esc_quiet(EscapeState *state) {
+    (void)state;
+    escape_quiet = !escape_quiet;
+    return false;
 }
 
 static bool esc_set(EscapeState *state) {
@@ -56,6 +64,7 @@ static bool esc_hex(EscapeState *state) {
 
 static const Escape escapes[] = {
     {"exit", esc_exit, ESCAPE_FLAGS_NONE},
+    {"quiet", esc_quiet, ESCAPE_FLAGS_NONE},
     {"set", esc_set, ESCAPE_FLAG_RESULT | ESCAPE_FLAG_ARG_TOKEN | ESCAPE_FLAG_ARG_NUMBER},
     {"get", esc_get, ESCAPE_FLAG_RESULT | ESCAPE_FLAG_ARG_TOKEN},
     {"hex", esc_hex, ESCAPE_FLAG_ARG_NUMBER},
