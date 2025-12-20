@@ -1,7 +1,5 @@
 #include <stddef.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 #include <complex.h>
 #include "menu.h"
@@ -34,19 +32,12 @@ static complex double cmd_ans(const complex double *args) {
     return menu_ans;
 }
 
-static complex double cmd_exit(const complex double *args) {
-    (void)args;
-    printf("\nbye!\n");
-    exit(0);
-}
-
 static const MenuCommand cmds_root[] = {
     {"add", cmd_add, 2},
     {"sub", cmd_sub, 2},
     {"mul", cmd_mul, 2},
     {"div", cmd_div, 2},
     {"ans", cmd_ans, 0},
-    {"exit", cmd_exit, 0},
     {0},
 };
 

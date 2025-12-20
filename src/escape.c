@@ -8,6 +8,12 @@
 
 static HashMap *vars;
 
+static bool esc_exit(EscapeState *state) {
+    (void)state;
+    printf("\nbye!\n");
+    exit(0);
+}
+
 static bool esc_set(EscapeState *state) {
     size_t len = strlen(state->arg_token) + 1;
     char *key = malloc(len);
@@ -49,6 +55,7 @@ static bool esc_hex(EscapeState *state) {
 }
 
 static const Escape escapes[] = {
+    {"exit", esc_exit, ESCAPE_FLAGS_NONE},
     {"set", esc_set, ESCAPE_FLAG_RESULT | ESCAPE_FLAG_ARG_TOKEN | ESCAPE_FLAG_ARG_NUMBER},
     {"get", esc_get, ESCAPE_FLAG_RESULT | ESCAPE_FLAG_ARG_TOKEN},
     {"hex", esc_hex, ESCAPE_FLAG_ARG_NUMBER},
