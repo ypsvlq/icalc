@@ -59,7 +59,7 @@ bool input_execute(complex double *result, const char *name) {
         }
     }
     if (command == NULL || command->name == NULL) {
-        printf("error: invalid command %s\n", name);
+        printf("error: unknown command %s\n", name);
         return false;
     }
 
@@ -67,13 +67,17 @@ bool input_execute(complex double *result, const char *name) {
     char *token = strtok(NULL, WHITESPACE);
     if (token != NULL || nested) {
         for (int i = 0; i < command->args; i++) {
+            if (token == NULL) {
+                printf("error: missing argument for %s\n", name);
+                return false;
+            }
             if (!input_arg(&args[i], token, '\0')) {
                 return false;
             }
             token = strtok(NULL, WHITESPACE);
         }
         if (token != NULL) {
-            printf("error: extra argument\n");
+            printf("error: extra argument for %s\n", name);
             return false;
         }
     } else if (command->args > 0) {
@@ -92,7 +96,7 @@ bool input_execute(complex double *result, const char *name) {
 static bool input_escape(complex double *result, const char *name, bool nested) {
     const Escape *escape = hm_get(escape_map, &name[1]);
     if (escape == NULL) {
-        printf("error: invalid command %s\n", name);
+        printf("error: unknown command %s\n", name);
         return false;
     }
 
@@ -102,7 +106,7 @@ static bool input_escape(complex double *result, const char *name, bool nested) 
         state.result = result;
     } else {
         if (nested) {
-            printf("error: invalid use of escape\n");
+            printf("error: invalid use of %s\n", name);
             return false;
         }
     }
@@ -110,19 +114,24 @@ static bool input_escape(complex double *result, const char *name, bool nested) 
     if ((escape->flags & ESCAPE_FLAG_ARG_TOKEN) != 0) {
         state.arg_token = strtok(NULL, WHITESPACE);
         if (state.arg_token == NULL) {
-            printf("error: missing argument\n");
+            printf("error: missing argument for %s\n", name);
             return false;
         }
     }
 
     if ((escape->flags & ESCAPE_FLAG_ARG_NUMBER) != 0) {
-        if (!input_arg(&state.arg_number, strtok(NULL, WHITESPACE), '\0')) {
+        char *token = strtok(NULL, WHITESPACE);
+        if (token == NULL) {
+            printf("error: missing argument for %s\n", name);
+            return false;
+        }
+        if (!input_arg(&state.arg_number, token, '\0')) {
             return false;
         }
     }
 
     if (strtok(NULL, WHITESPACE) != NULL) {
-        printf("error: extra argument\n");
+        printf("error: extra argument for %s\n", name);
         return false;
     }
 
@@ -130,11 +139,6 @@ static bool input_escape(complex double *result, const char *name, bool nested) 
 }
 
 static bool input_arg(complex double *result, char *token, char expected_end) {
-    if (token == NULL) {
-        printf("error: missing argument\n");
-        return false;
-    }
-
     if (token[0] == '(') {
         return input_nested(result, token);
     }
@@ -185,7 +189,7 @@ static bool input_nested(complex double *result, char *token) {
     *bracket = ')';
     token = strtok(bracket, WHITESPACE);
     if (strcmp(token, ")") != 0) {
-        printf("error: invalid command %s\n", token);
+        printf("error: unknown command %s\n", token);
         return false;
     }
 
