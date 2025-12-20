@@ -11,6 +11,7 @@
 
 #define WHITESPACE " \t\n"
 
+static void input_continue(char *token);
 static bool input_nested(complex double *result, char *token);
 static bool input_arg(complex double *result, char *token, char expected_end);
 static bool input_escape(complex double *result, const char *name, bool nested);
@@ -151,13 +152,7 @@ static bool input_arg(complex double *result, char *token, char expected_end) {
 }
 
 static bool input_nested(complex double *result, char *token) {
-    // remove null terminator if it was inserted by strtok
-    char *next = strtok(NULL, WHITESPACE);
-    if (next != NULL) {
-        next[strlen(next)] = ' ';
-        input[INPUT_BUFFER_LEN - 1] = '\0';
-        token[strlen(token)] = ' ';
-    }
+    input_continue(token);
 
     // find matching close bracket
     char *bracket = token;
@@ -195,4 +190,14 @@ static bool input_nested(complex double *result, char *token) {
     }
 
     return true;
+}
+
+// removes null terminator if it was inserted by strtok
+static void input_continue(char *token) {
+    char *next = strtok(NULL, WHITESPACE);
+    if (next != NULL) {
+        input_continue(next);
+        token[strlen(token)] = ' ';
+        input[INPUT_BUFFER_LEN - 1] = '\0';
+    }
 }
