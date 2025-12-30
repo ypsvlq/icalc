@@ -5,6 +5,7 @@
 #include <complex.h>
 #include "escape.h"
 #include "hashmap.h"
+#include "menu.h"
 
 bool escape_quiet = false;
 
@@ -58,11 +59,13 @@ static bool esc_get(EscapeState *state) {
 }
 
 static bool esc_int(EscapeState *state) {
+    menu_ans = state->arg_number;
     printf("\nresult = %lld\n", (long long)creal(state->arg_number));
     return false;
 }
 
 static bool esc_hex(EscapeState *state) {
+    menu_ans = state->arg_number;
     printf("\nresult = 0x%llx\n", (unsigned long long)creal(state->arg_number));
     return false;
 }
