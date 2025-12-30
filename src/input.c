@@ -145,6 +145,14 @@ static bool input_arg(complex double *result, char *token, char expected_end) {
 
     char *endptr;
     *result = strtod(token, &endptr);
+    if (*endptr == '+' || *endptr == '-') {
+        *result += I * strtod(endptr, &endptr);
+        if (*endptr == 'i') {
+            endptr++;
+        } else {
+            endptr = token; // trigger error condition
+        }
+    }
     if (endptr == token || *endptr != expected_end) {
         printf("error: invalid number %s", token);
         if (expected_end != '\n') {
