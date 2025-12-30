@@ -57,6 +57,11 @@ static bool esc_get(EscapeState *state) {
     return true;
 }
 
+static bool esc_int(EscapeState *state) {
+    printf("\nresult = %lld\n", (long long)creal(state->arg_number));
+    return false;
+}
+
 static bool esc_hex(EscapeState *state) {
     printf("\nresult = 0x%llx\n", (unsigned long long)creal(state->arg_number));
     return false;
@@ -67,6 +72,7 @@ static const Escape escapes[] = {
     {"quiet", esc_quiet, ESCAPE_FLAGS_NONE},
     {"set", esc_set, ESCAPE_FLAG_RESULT | ESCAPE_FLAG_ARG_TOKEN | ESCAPE_FLAG_ARG_NUMBER},
     {"get", esc_get, ESCAPE_FLAG_RESULT | ESCAPE_FLAG_ARG_TOKEN},
+    {"int", esc_int, ESCAPE_FLAG_ARG_NUMBER},
     {"hex", esc_hex, ESCAPE_FLAG_ARG_NUMBER},
     {0},
 };
